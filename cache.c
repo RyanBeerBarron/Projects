@@ -3,34 +3,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include "cache.h"
 
-
-#define BUFFER_LENGTH 500
-
-#define C_DEBUG 1
-
-
-typedef struct _cache_line {
-	int l;
-	int tag;
-	int age;
-} cache_line_t;
-
-typedef struct _cache {
-	int k;
-	int n;
-	int l;
-	cache_line_t** cache;
-} cache_t;
-
-typedef struct _cli_arg {
-	int counter;
-	char** vector;
-} cli_arg_t;
 
 int parse_cli (char* line, cli_arg_t* args)
 {
-	int counter = 1;
+	int counter = 2;
 	for(char* i = line; *i != '\0'; i++)
 	{
 		if(*i == ' ')
@@ -67,42 +45,6 @@ int ispow2(int num)
 }
 
 
-
-int initialize_cache (cache_line_t** cache, int k, int n, int l)
-{
-	for(int i = 0; i<n; i++)
-	{	
-		for(int j = 0; j<k; j++)
-		{	
-			cache_line_t cache_line;
-			cache_line.l = l;
-			cache_line.tag = -1;
-			cache_line.age = 0;
-			cache[i][j] = cache_line;
-		}
-	}
-	return 1;
-}
-
-int print_cache (cache_line_t** cache, int k, int n)
-{	
-	for(int i = 0; i<n; i++)
-	{	
-		for(int j = 0; j<k; j++)
-			printf("-------------");
-		printf("-\n");
-		for(int j = 0; j<k; j++)
-		{
-			cache_line_t cache_line = cache[i][j];
-			printf("| %4x %d ", cache_line.tag, cache_line.age);
-		}
-		printf("|\n");
-		for(int j = 0; j<k; j++)
-			printf("-------------");
-		printf("-\n\n");
-	}
-	return 1;
-}
 int main(int argc, char** argv)
 {
 	int loop = 1;
@@ -131,7 +73,7 @@ int main(int argc, char** argv)
 		while(!init_cache){
 			temp1 = 0;
 			temp2 = 0;
-			temp3 = 0;
+			temp3 = 1;
 			temp4 = 0;
 			verbose = 0;
 			file = 0;
@@ -229,6 +171,13 @@ int main(int argc, char** argv)
 						"Enter \"redo\" to change the cache parameters\n"
 						"Enter \"quit\" to leave.\n");
 				fgets(s, BUFFER_LENGTH, stdin);
+				cache_t cache;
+				cache.cache = malloc(n*sizeof(cache_line_t*));
+				for(int i=0; i<n i++)
+					cache.cache[i] = malloc(k*sizeof(cache_line_t));
+				initialize_cache(cache.cache, n, k, l);
+				printf("Test 10\n");
+				print_cache(cache.cache, n, k);
 			}
 		}
 		free(args.vector);
@@ -240,35 +189,3 @@ int main(int argc, char** argv)
 
 
 
-
-
-
-	/*
-	if(argc != 4)
-		return 0;
-	else
-	{
-		int k = atoi(argv[1]);
-		int n = atoi(argv[2]);
-		int l = atoi(argv[3]);
-
-		cache_t cache;
-		cache.k = k;
-		cache.n = n;
-		cache.l = l;
-		
-		
-		
-		cache.cache = malloc(n*(sizeof(cache_line_t*)));
-		for(int i=0; i<n; i++)
-			cache.cache[i] = malloc(k*sizeof(cache_line_t));
-		printf("Size of cache: %lu\n", sizeof(cache_line_t*));
-		
-		int rv;
-		rv = initialize_cache(cache.cache, k, n, l);
-		if(rv)
-			print_cache(cache.cache, k, n);
-		
-		free(cache.cache);
-		return 1;
-	*/

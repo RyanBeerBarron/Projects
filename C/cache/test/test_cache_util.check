@@ -1,0 +1,37 @@
+#include <stdlib.h>
+#include "cache.h"
+#include "cache_util.h"
+
+#test util_test1
+	cli_arg arg;
+	arg.counter = 0;
+	arg.vector = malloc(10 * sizeof(char*) );
+	char line[BUFFER_LENGTH] = "This is a test";
+	ck_assert_int_eq(parse_cli(line, &arg), SUCCESS);
+	for(int i = 0; i<arg.counter; i++)
+		free(arg.vector[i]);
+	free(arg.vector);
+
+#test util_test2
+	cli_arg arg;
+	arg.counter = 0;
+	arg.vector = malloc(10 * sizeof(char*) );
+	char line[BUFFER_LENGTH] = "This is a test";
+	parse_cli(line, &arg);
+	ck_assert_str_eq(arg.vector[1], "is");
+	for(int i = 0; i<arg.counter; i++)
+		free(arg.vector[i]);
+	free(arg.vector);
+
+#test util_test3
+	cli_arg arg;
+	arg.counter = 0;
+	arg.vector = malloc(10 * sizeof(char*) );
+	char line[BUFFER_LENGTH] = "This is a test";
+	parse_cli(line, &arg);
+	ck_assert_int_eq(arg.counter, 4);
+	for(int i = 0; i<arg.counter; i++)
+		free(arg.vector[i]);
+	free(arg.vector);
+
+

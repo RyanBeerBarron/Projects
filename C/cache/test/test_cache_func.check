@@ -1,0 +1,15 @@
+#include <stdlib.h>
+#include "cache.h"
+#include "cache_func.h"
+
+#test func_test1
+	cache cache;
+	size_t k = 8;
+	size_t n = 2;
+	size_t l = 16;
+	size_t a = 32;
+	initialize_cache(&cache, k, n, l, a);
+	ck_assert_int_eq(cache.k, k);
+	ck_assert_int_eq(cache.n, n);
+	ck_assert_int_eq(cache.min_address_size, log2(k)+log2(n)+log2(l));
+	free_cache(&cache);

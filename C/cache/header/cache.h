@@ -1,20 +1,22 @@
 #ifndef CACHE_H
 #define CACHE_H
 
+#include <stdlib.h>
 
 #define BUFFER_LENGTH 500
 #define ARGS_LENGTH 25
 #define ARGS_NUMBER BUFFER_LENGTH/ARGS_LENGTH
 
-#define EXIT 0
-#define SUCCES 1
-#define NOTHING 2
-#define ERROR 3
+#define ERROR -1
+#define SUCCESS 0
+#define INVALID 1
+#define EXIT 2
+#define NOTHING 3
 #define REDO 4
 
-#define DEFAULT 0
-#define MANUAL 1
-#define FILE_MODE 2
+#define DEFAULT 5
+#define MANUAL 6
+#define FILE_MODE 7
 
 #define EXIT_STATE 0
 #define ENTRY_STATE 1
@@ -23,25 +25,44 @@
 #define MANUAL_STATE 4
 #define FILE_STATE 5
 
-int verbose, file;
+#define ADDRESS_8 8
+#define ADDRESS_16 16
+#define ADDRESS_32 32
+#define ADDRESS_64 64
 
-typedef struct _cache_line {
-	int l;
-	int tag;
-	int age;
-} cache_line_t;
+#define NUM_ADDRESS 30
 
-typedef struct _cache {
-	int k;
-	int n;
-	int l;
-	cache_line_t** cache;
-} cache_t;
+unsigned verbose, file;
 
-typedef struct _cli_arg {
-	int counter;
-	char** vector;
-} cli_arg_t;
+char* err_str;
+
+
+typedef struct cache_line cache_line;
+struct cache_line {
+	size_t l;
+	int tag; // unintialized cache line has a negative tag
+	int age; // unintialized cache line has a negative age
+	size_t address_size;
+	char* data;
+};
+
+typedef struct cache cache;
+struct cache {
+	int init;
+	size_t k;
+	size_t n;
+	size_t l;
+	size_t min_address_size;
+	cache_line** cache;
+	unsigned cache_hit;
+	unsigned cache_miss;
+};
+
+typedef struct cli_arg cli_arg;
+struct cli_arg {
+	size_t counter;
+	char vector[ARGS_NUMBER][ARGS_LENGTH];
+};
 
 
 #endif

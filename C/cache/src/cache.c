@@ -22,11 +22,12 @@ int main(int argc, char** argv)
 		"Also specify the size of the addresses (8, 16, 32 or 64 bits).\n"
 		"Or enter \"quit\" to leave.\n");
 	while(state != EXIT_STATE) {
+		verbose = 0;
+		file = 0;
 		size_t n, k, l, a;
 		cache cache;
 		cache.init = 0;
 		char string[BUFFER_LENGTH];
-		char* temp = NULL;
 		FILE* input = NULL; 
 		FILE* output = NULL;
 
@@ -46,12 +47,12 @@ int main(int argc, char** argv)
 			int rv = get_input(&args, state); // Parse the line into multiple strings and get result message
 			if (rv == ERROR) {
 				fprintf(stderr, "Exiting... \n");
-				exit(EXIT_FAILURE);
+				return(EXIT_FAILURE);
 			} else if (rv == NOTHING) { // In case of only whitespace
 			} else if(rv == EXIT) {
 					state = EXIT_STATE;
 			} else if(rv == INVALID) {
-				printf("Invalid argument, please try again.\n");
+				fprintf(stderr, "Invalid argument, please try again.\n");
 			} else if(rv == SUCCESS) {
 				for(size_t i = 0; i<args.counter; i++) {
 					switch(i) {
@@ -98,14 +99,12 @@ int main(int argc, char** argv)
 					"Enter \"redo\" to change the cache parameters\n"
 					"Enter \"quit\" to leave.\n"
 					"-----------------------------------------------------------------\n");
-			verbose = 0;
-			file = 0;
 			cli_arg args;
 			int rv = get_input(&args, state);
 			if (rv == NOTHING) {
 			} else if (rv == ERROR) {	
 				fprintf(stderr, "Exiting... \n");
-				exit(EXIT_FAILURE);
+				return(EXIT_FAILURE);
 			} else if(rv == EXIT) {
 				state = EXIT_STATE;
 			} else if(rv == REDO) {
@@ -133,41 +132,71 @@ int main(int argc, char** argv)
 					fprintf(stderr, "Error, could not open / create output file.\n");
 					perror("Error trying to open file");
 					fprintf(stderr, "Exiting... \n");
-					exit(EXIT_FAILURE);	
+					return(EXIT_FAILURE);	
 				}
 			}	
 			if(initialize_cache(&cache, k, n, l, a) == ERROR) {	
 				fprintf(stderr, "Exiting... \n");
-				exit(EXIT_FAILURE);
+				return(EXIT_FAILURE);
 
 			}
 		}
 		while(state == FILE_STATE || state == DEFAULT_STATE || state == MANUAL_STATE) {
 			printf(	"The simulation goes step by step through all the addresses in the file or from the default ones\n"
 					"Just enter a newline to step through the next address, or enter a \".\" to complete the whole simulation\n"
-					"At any point, you can enter \"-p\" to print the cache to see its content and current hit / miss rate\n"
+					"At any point, you can enter \"print\" to print the cache to see its content and current hit / miss rate\n"
 					"Or you can enter \"end\" to stop the simulation, once finished you can repeat the same, do another or exit the program\n"
 					"If you are in manual mode, just enter the address in the command line either in binary or hexadecimal form.\n");
 			int loop = 1;
-			while(loop) {
+			size_t index = 0;
+			char* addresses[NUM_ADDRESS];
+			switch (cache.a) {
+				case 8: 
+					for(size_t i = 0; i<NUM_ADDRESS; i++) {
+						addresses[i] = addresses_8[i];
+					}
+					break;
+				case 16:
+					for(size_t i = 0; i<NUM_ADDRESS; i++) {
+						addresses[i] = addresses_16[i];
+					}
+					break;
+				case 32:
+					for(size_t i = 0; i<NUM_ADDRESS; i++) {
+						addresses[i] = addresses_32[i];
+					}
+					break;	
+				case 64:
+					for(size_t i = 0; i<NUM_ADDRESS; i++) {
+						addresses[i] = addresses_64[i];
+					}
+					break;				
+				default : 
+					break;
+			}			 
+			while(loop && index < NUM_ADDRESS) {
 				cli_arg args;
 				int rv = get_input(&args, state);
 				if (rv == NOTHING) {
-					if(state == FILE_STATE || state = MANUAL_STATE) {
+					if(state == DEFAULT_STATE) {
 						// Step through next address
-					} else {}
-				} else if (rv == PRINT) {
-					print_cache(&cache);
+						index++;
+					} else if (state == FILE_STATE) {
+						fgets(string, BUFFER_LENGTH, )
+					}
+				} else if (rv == PRINT || verbose) {
+					print_cache(cache);
 				} else if (rv == AUTO) {
 					//Go through all the addresses
-					print_cache(&cache);
+					print_cache(cache);
 					loop = 0;
 				} else if (rv == END) {
 					loop = 0;
+				} else if (rv == ADDRESS) {
+
 				}
 
  
-
 			}
 
 		}

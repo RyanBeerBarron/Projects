@@ -54,7 +54,7 @@ int parse_args (cli_arg* arguments, unsigned state)
 					if(!isdigit(*j))
 						is_integer = 0;
 				}
-				if(! is_integer)
+				if(!is_integer)
 					valid_ints = 0;
 			}
 			if(valid_ints)
@@ -87,11 +87,24 @@ int parse_args (cli_arg* arguments, unsigned state)
 		else if(!strcmp(arguments->vector[0], "1")) {
 			return MANUAL;
 		} else return FILE_MODE;	
-	} else if (state == FILE_MODE) {
-		
-	}
+	} else if (state == FILE_STATE || state == DEFAULT_STATE || state == MANUAL_STATE) {
+		if(arguments->counter == 1) {
+			for(char* i = arguments->vector[0]; *i != 0; i++) {
+				*i = tolower(*i);
+			}
+			if(!strcmp(arguments->vector[0], "print")) {
+				return PRINT;
+			} else if (!strcmp(arguments->vector[0], ".") && (state == FILE_STATE || state == DEFAULT_STATE)) {
+				return AUTO;
+			} else if (!strcmp(arguments->vector[0], "end")) {
+				return END;
+			} else if (state == MANUAL_STATE) return ADDRESS;
+		} else {
+			fprintf(stderr, "Too many arguments");
+			return INVALID;
+		}
+	} 
 }
-
 
 int ispow2(int num)
 {
@@ -130,5 +143,40 @@ int substring(const char* src, char* dst, size_t start, size_t end) // Retrieves
 	else {
 		size_t n = end - start;
 		src += start;
+	}
+}
+
+int hex_to_bin(const char* hex, char* bin)
+{
+	char* bin = "";
+	for(char* i = hex+2; *i != 0; i++) {
+		switch(*i) {
+			case '0' :
+				*bin = "0000";
+				break;
+			case '1' : 
+				*temp = "0001";
+				break;
+			case '2' : 
+				*temp = "0010";
+				break;
+			case '3' : 
+				*temp = "0011";
+				break;
+			case '4' : 
+				*temp = "0100";
+				break;
+			case '5' : 
+				*temp = "0101";
+				break;
+			case '6' :
+				*temp = "0110";
+				break;
+			case '7' : 
+				*temp = "0111";
+				break;
+			case 	
+
+		}
 	}
 }

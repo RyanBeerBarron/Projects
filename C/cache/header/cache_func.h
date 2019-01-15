@@ -11,7 +11,7 @@ int is_valid_address(const char* address);
 
 int write_cache(cache* cache, const char* address, const char* data);
 
-int retrieve_cache(cache* cache, const char* address, char* data, size_t size);
+int retrieve_cache(const cache* cache, const char* address, char* data, size_t size);
 
 size_t convert_bool_string(const char* address);
 

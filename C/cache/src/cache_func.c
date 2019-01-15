@@ -11,6 +11,7 @@ int initialize_cache (cache* cache, size_t k, size_t n, size_t l, size_t a)
 	cache->n = n;
 	cache->k = k;
 	cache->l = l;
+	cache->a = a;
 	cache->min_address_size = log2(n) + log2(l) + log2(k);
 	cache->cache = malloc(n * sizeof(cache_line*));
 	if(!cache->cache) {
@@ -42,30 +43,36 @@ int initialize_cache (cache* cache, size_t k, size_t n, size_t l, size_t a)
 	return 0;
 }
 
-int print_cache (cache cache)
+int print_cache (cache cache, FILE* stream)
 {	
 	for(size_t i = 0; i<cache.n; i++)
 	{	
 		for(size_t j = 0; j<cache.k; j++)
-			printf("-------------");
-		printf("-\n");
+			fprintf(stream, "-------------");
+		fprintf(stream, "-\n");
 		for(size_t j = 0; j<cache.k; j++)
 		{
 			cache_line cache_line = cache.cache[i][j];
-			printf("| %4x %d ", cache_line.tag, cache_line.age);
+			fprintf(stream, "| %4x %d ", cache_line.tag, cache_line.age);
 		}
-		printf("|\n");
+		fprintf(stream, "|\n");
 		for(size_t j = 0; j<cache.k; j++)
-			printf("-------------");
-		printf("-\n\n");
+			fprintf(stream, "-------------");
+		fprintf(stream, "-\n\n");
 	}
-	return 1;
+	fprintf(stream, "Number of cache hit is: %u\nNumber of cache miss is: %u\n", cache.cache_hit, cache.cache_miss);
+	return 0;
+}
+
+int print_address (const char* address)
+{
+
 }
 
 int write_cache (cache* cache, const char* address, const char* data)
 {
 	size_t len = strlen(address);
-	if(cache->min_address_size < len)
+	if(cache->min_address_size > len)
 		return ERROR;
 	else if(is_valid_address(address)){
 		return ERROR;
@@ -119,7 +126,7 @@ int write_cache (cache* cache, const char* address, const char* data)
  	}
 }
 
-int retrieve_cache(cache* cache, const char* address, char* data, size_t size)
+int retrieve_cache(const cache* cache, const char* address, char* data, size_t size)
 {
 	size_t len = strlen(address);
 	if(cache->min_address_size < len)
@@ -177,12 +184,12 @@ int free_cache(cache* cache)
 	return SUCCESS;
 }
 
-int is_valid_address(char const * address)
+int is_valid_address(char const * address, cache const * cache)
 {
 	size_t len = strlen(address);
-	if(!(len == ADDRESS_8 || len == ADDRESS_16 || len == ADDRESS_32 || len == ADDRESS_64)) {
-		return ERROR;
-	}  else return SUCCESS;
+	if(len == cache->a) {
+		return SUCCESS;
+	}  else if (len == cache->a+2) return SUCCESS;
 }
 
 size_t convert_bool_string(char const * string)

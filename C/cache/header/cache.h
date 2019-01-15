@@ -13,10 +13,14 @@
 #define EXIT 2
 #define NOTHING 3
 #define REDO 4
-
 #define DEFAULT 5
 #define MANUAL 6
 #define FILE_MODE 7
+#define PRINT 8
+#define AUTO 9
+#define ADDRESS 10
+#define END 11
+
 
 #define EXIT_STATE 0
 #define ENTRY_STATE 1
@@ -52,6 +56,7 @@ struct cache {
 	size_t k;
 	size_t n;
 	size_t l;
+	size_t a;
 	size_t min_address_size;
 	cache_line** cache;
 	unsigned cache_hit;
